@@ -1,11 +1,12 @@
 import React from 'react'
-import {StyleProp, StyleSheet, View, ViewStyle} from 'react-native'
-import {AppBskyEmbedImages} from '@atproto/api'
+import {type StyleProp, StyleSheet, View, type ViewStyle} from 'react-native'
+import {type AppBskyEmbedImages} from '@atproto/api'
 
-import {HandleRef, useHandleRef} from '#/lib/hooks/useHandleRef'
+import {type HandleRef, useHandleRef} from '#/lib/hooks/useHandleRef'
+import {isAndroid} from '#/platform/detection'
 import {PostEmbedViewContext} from '#/view/com/util/post-embeds/types'
 import {atoms as a, useBreakpoints} from '#/alf'
-import {Dimensions} from '../../lightbox/ImageViewing/@types'
+import {type Dimensions} from '../../lightbox/ImageViewing/@types'
 import {GalleryItem} from './Gallery'
 
 interface ImageLayoutGridProps {
@@ -62,11 +63,13 @@ function ImageLayoutGridInner(props: ImageLayoutGridInnerProps) {
   const containerRef4 = useHandleRef()
   const thumbDimsRef = React.useRef<(Dimensions | null)[]>([])
 
+  const outerFlex = isAndroid ? a.flex_1 : a.flex_shrink
+
   switch (count) {
     case 2: {
       const containerRefs = [containerRef1, containerRef2]
       return (
-        <View style={[a.flex_1, a.flex_row, gap]}>
+        <View style={[outerFlex, a.flex_row, gap]}>
           <View style={[a.flex_1, {aspectRatio: 1}]}>
             <GalleryItem
               {...props}
@@ -92,7 +95,7 @@ function ImageLayoutGridInner(props: ImageLayoutGridInnerProps) {
     case 3: {
       const containerRefs = [containerRef1, containerRef2, containerRef3]
       return (
-        <View style={[a.flex_1, a.flex_row, gap]}>
+        <View style={[outerFlex, a.flex_row, gap]}>
           <View style={[a.flex_1, {aspectRatio: 1}]}>
             <GalleryItem
               {...props}
