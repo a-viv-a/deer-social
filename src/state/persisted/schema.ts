@@ -129,6 +129,7 @@ const schema = z.object({
   constellationEnabled: z.boolean().optional(),
   directFetchRecords: z.boolean().optional(),
   noAppLabelers: z.boolean().optional(),
+  repostCarouselEnabled: z.boolean().optional(),
 
   /** @deprecated */
   mutedThreads: z.array(z.string()),

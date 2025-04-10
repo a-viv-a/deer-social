@@ -9,7 +9,11 @@ import {
   View,
   type ViewStyle,
 } from 'react-native'
-import {type AppBskyActorDefs, AppBskyEmbedVideo} from '@atproto/api'
+import {
+  type AppBskyActorDefs,
+  AppBskyEmbedVideo,
+  AppBskyFeedDefs,
+} from '@atproto/api'
 import {msg} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
 import {useQueryClient} from '@tanstack/react-query'
@@ -21,6 +25,7 @@ import {logger} from '#/logger'
 import {isIOS, isNative, isWeb} from '#/platform/detection'
 import {listenPostCreated} from '#/state/events'
 import {useFeedFeedbackContext} from '#/state/feed-feedback'
+import {useRepostCarouselEnabled} from '#/state/preferences/repost-carousel-enabled'
 import {useTrendingSettings} from '#/state/preferences/trending'
 import {STALE} from '#/state/queries'
 import {
@@ -51,6 +56,7 @@ import {DiscoverFallbackHeader} from './DiscoverFallbackHeader'
 import {FeedShutdownMsg} from './FeedShutdownMsg'
 import {PostFeedErrorMessage} from './PostFeedErrorMessage'
 import {PostFeedItem} from './PostFeedItem'
+import {PostFeedItemCarousel} from './PostFeedItemCarousel'
 import {ViewFullThread} from './ViewFullThread'
 
 type FeedRow =
@@ -86,6 +92,11 @@ type FeedRow =
       showReplyTo: boolean
     }
   | {
+      type: 'reposts'
+      key: string
+      items: FeedPostSlice[]
+    }
+  | {
       type: 'videoGridRowPlaceholder'
       key: string
     }
@@ -118,6 +129,15 @@ type FeedRow =
       key: string
     }
 
+type FeedPostSliceOrGroup =
+  | (FeedPostSlice & {
+      isRepostSlice?: false
+    })
+  | {
+      isRepostSlice: true
+      slices: FeedPostSlice[]
+    }
+
 export function getItemsForFeedback(feedRow: FeedRow):
   | {
       item: FeedPostSliceItem
@@ -128,6 +148,11 @@ export function getItemsForFeedback(feedRow: FeedRow):
       item,
       feedContext: feedRow.slice.feedContext,
     }))
+  } else if (feedRow.type === 'reposts') {
+    return feedRow.items.map((item, i) => ({
+      item: item.items[0],
+      feedContext: feedRow.items[i].feedContext,
+    }))
   } else if (feedRow.type === 'videoGridRow') {
     return feedRow.items.map((item, i) => ({
       item,
@@ -136,6 +161,52 @@ export function getItemsForFeedback(feedRow: FeedRow):
   } else {
     return []
   }
+}
+
+// logic from https://github.com/cheeaun/phanpy/blob/d608ee0a7594e3c83cdb087e81002f176d0d7008/src/utils/timeline-utils.js#L9
+function groupReposts(values: FeedPostSlice[]) {
+  let newValues: FeedPostSliceOrGroup[] = []
+  const reposts: FeedPostSlice[] = []
+
+  // serial reposts lain
+  let serialReposts = 0
+
+  for (const row of values) {
+    if (AppBskyFeedDefs.isReasonRepost(row.reason)) {
+      reposts.push(row)
+      serialReposts++
+      continue
+    }
+
+    newValues.push(row)
+    if (serialReposts < 3) {
+      serialReposts = 0
+    }
+  }
+
+  // TODO: handle counts for multi-item slices
+  if (
+    values.length > 10 &&
+    (reposts.length > values.length / 4 || serialReposts >= 3)
+  ) {
+    // if boostStash is more than 3 quarter of values
+    if (reposts.length > (values.length * 3) / 4) {
+      // insert boost array at the end of specialHome list
+      newValues = [...newValues, {isRepostSlice: true, slices: reposts}]
+    } else {
+      // insert boosts array in the middle of specialHome list
+      const half = Math.floor(newValues.length / 2)
+      newValues = [
+        ...newValues.slice(0, half),
+        {isRepostSlice: true, slices: reposts},
+        ...newValues.slice(half),
+      ]
+    }
+
+    return newValues
+  }
+
+  return values as FeedPostSliceOrGroup[]
 }
 
 // DISABLED need to check if this is causing random feed refreshes -prf
@@ -164,6 +235,7 @@ let PostFeed = ({
   savedFeedConfig,
   initialNumToRender: initialNumToRenderOverride,
   isVideoFeed = false,
+  useRepostCarousel = false,
 }: {
   feed: FeedDescriptor
   feedParams?: FeedParams
@@ -186,6 +258,7 @@ let PostFeed = ({
   savedFeedConfig?: AppBskyActorDefs.SavedFeed
   initialNumToRender?: number
   isVideoFeed?: boolean
+  useRepostCarousel?: boolean
 }): React.ReactNode => {
   const {_} = useLingui()
   const queryClient = useQueryClient()
@@ -320,6 +393,12 @@ let PostFeed = ({
 
   const {trendingDisabled, trendingVideoDisabled} = useTrendingSettings()
 
+  const repostCarouselEnabled = useRepostCarouselEnabled()
+
+  if (feedType === 'following') {
+    useRepostCarousel = repostCarouselEnabled
+  }
+
   const feedItems: FeedRow[] = React.useMemo(() => {
     let feedKind: 'following' | 'discover' | 'profile' | 'thevids' | undefined
     if (feedType === 'following') {
@@ -399,7 +478,11 @@ let PostFeed = ({
           }
         } else {
           for (const page of data?.pages) {
-            for (const slice of page.slices) {
+            let slices = useRepostCarousel
+              ? groupReposts(page.slices)
+              : (page.slices as FeedPostSliceOrGroup[])
+
+            for (const slice of slices) {
               sliceIndex++
 
               if (hasSession) {
@@ -441,7 +524,13 @@ let PostFeed = ({
                 }
               }
 
-              if (slice.isFallbackMarker) {
+              if (slice.isRepostSlice) {
+                arr.push({
+                  type: 'reposts',
+                  key: slice.slices[0]._reactKey,
+                  items: slice.slices,
+                })
+              } else if (slice.isFallbackMarker) {
                 arr.push({
                   type: 'fallbackMarker',
                   key:
@@ -531,6 +620,7 @@ let PostFeed = ({
     gtMobile,
     isVideoFeed,
     areVideoFeedsEnabled,
+    useRepostCarousel,
   ])
 
   // events
@@ -652,6 +742,8 @@ let PostFeed = ({
             rootPost={slice.items[0].post}
           />
         )
+      } else if (row.type === 'reposts') {
+        return <PostFeedItemCarousel items={row.items} />
       } else if (row.type === 'sliceViewFullThread') {
         return <ViewFullThread uri={row.uri} />
       } else if (row.type === 'videoGridRowPlaceholder') {

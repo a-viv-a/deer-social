@@ -1,9 +1,10 @@
-import React, {memo, useCallback} from 'react'
-import {StyleProp, View, ViewStyle} from 'react-native'
-import {AppBskyActorDefs, ModerationDecision} from '@atproto/api'
+import {memo, useCallback} from 'react'
+import {type StyleProp, View, type ViewStyle} from 'react-native'
+import {type AppBskyActorDefs, type ModerationDecision} from '@atproto/api'
 import {msg} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
 import {useQueryClient} from '@tanstack/react-query'
+import type React from 'react'
 
 import {makeProfileLink} from '#/lib/routes/links'
 import {forceLTR} from '#/lib/strings/bidi'
@@ -53,7 +54,7 @@ let PostMeta = (opts: PostMetaOpts): React.ReactNode => {
   return (
     <View
       style={[
-        a.flex_1,
+        isAndroid ? a.flex_1 : a.flex_shrink,
         a.flex_row,
         a.align_center,
         a.pb_2xs,

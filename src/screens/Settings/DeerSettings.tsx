@@ -27,6 +27,10 @@ import {
   useNoAppLabelers,
   useSetNoAppLabelers,
 } from '#/state/preferences/no-app-labelers'
+import {
+  useRepostCarouselEnabled,
+  useSetRepostCarouselEnabled,
+} from '#/state/preferences/repost-carousel-enabled'
 import {TextInput} from '#/view/com/modals/util'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a} from '#/alf'
@@ -127,6 +131,9 @@ export function DeerSettingsScreen({}: Props) {
 
   const location = useGeolocation()
   const setLocationControl = Dialog.useDialogControl()
+
+  const repostCarouselEnabled = useRepostCarouselEnabled()
+  const setRepostCarouselEnabled = useSetRepostCarouselEnabled()
 
   const [gates, setGatesView] = useState(Object.fromEntries(useGatesCache()))
   const dangerousSetGate = useDangerousSetGate()
@@ -268,6 +275,17 @@ export function DeerSettingsScreen({}: Props) {
             <SettingsList.ItemText>
               <Trans>Tweaks</Trans>
             </SettingsList.ItemText>
+            <Toggle.Item
+              name="repost_carousel"
+              label={_(msg`Combine reposts into a horizontal carousel`)}
+              value={repostCarouselEnabled}
+              onChange={value => setRepostCarouselEnabled(value)}
+              style={[a.w_full]}>
+              <Toggle.LabelText style={[a.flex_1]}>
+                <Trans>Combine reposts into a horizontal carousel</Trans>
+              </Toggle.LabelText>
+              <Toggle.Platform />
+            </Toggle.Item>
             <Toggle.Item
               name="under construction"
               label={_(msg`🚧 under construction...`)}
