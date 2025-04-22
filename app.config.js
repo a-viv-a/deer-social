@@ -44,6 +44,7 @@ module.exports = function (_config) {
       slug: 'deer',
       scheme: ['bluesky', 'deer'],
       // owner: 'blueskysocial',
+      owner: 'neema.brown',
       runtimeVersion: {
         policy: 'appVersion',
       },
@@ -52,7 +53,7 @@ module.exports = function (_config) {
       primaryColor: '#1083fe',
       ios: {
         supportsTablet: false,
-        bundleIdentifier: 'xyz.blueskyweb.app',
+        bundleIdentifier: 'com.deersocial',
         config: {
           usesNonExemptEncryption: false,
         },
@@ -66,7 +67,7 @@ module.exports = function (_config) {
             'Used to save images to your library.',
           NSPhotoLibraryUsageDescription:
             'Used for profile pictures, posts, and other kinds of content',
-          CFBundleSpokenName: 'Blue Sky',
+          CFBundleSpokenName: 'Deer Social',
           CFBundleLocalizations: [
             'en',
             'an',
@@ -156,7 +157,7 @@ module.exports = function (_config) {
           backgroundColor: '#1185FE',
         },
         googleServicesFile: './google-services.json',
-        package: 'xyz.blueskyweb.app',
+        package: 'com.deersocial',
         intentFilters: [
           {
             action: 'VIEW',
@@ -400,7 +401,8 @@ module.exports = function (_config) {
               },
             },
           },
-          projectId: '55bd077a-d905-4184-9c7f-94789ba0f302',
+          //projectId: '55bd077a-d905-4184-9c7f-94789ba0f302',
+          projectId: '7fdb5d99-3996-4a6c-bdf5-b4c1698aa7e6',
         },
       },
     },

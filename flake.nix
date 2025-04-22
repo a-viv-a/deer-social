@@ -20,9 +20,11 @@
       androidSdk = android-nixpkgs.sdk.${system} (sdkPkgs: with sdkPkgs; [
         cmdline-tools-latest
         build-tools-35-0-0
+        build-tools-34-0-0
         platform-tools
         platforms-android-35
         emulator
+        cmake-3-22-1
         ndk-26-1-10909125
         ndk-28-0-13004108
       ]);
@@ -52,6 +54,7 @@
               nodejs
               yarn
               crowdin-cli
+              eas-cli
 
               typescript
               typescript-language-server
