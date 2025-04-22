@@ -17,20 +17,15 @@
         };
       };
       pinnedJDK = pkgs.jdk17;
-      androidBuildToolsVersion = "35.0.0";
-      androidNdkVersion="26.1.10909125";
-      androidComposition = pkgs.androidenv.composeAndroidPackages {
-        toolsVersion = "26.1.1";
-        cmdLineToolsVersion = "8.0";
-        platformToolsVersion = "35.0.1";
-        buildToolsVersions = [ androidBuildToolsVersion "34.0.0" ];
-        platformVersions = [ "35" ];
-        cmakeVersions = [ "3.10.2" "3.22.1" ];
-        includeNDK = true;
-        ndkVersions = [ androidNdkVersion  ];
-        useGoogleTVAddOns = false;
-      };
-      androidSdk = androidComposition.androidsdk;
+      androidSdk = android-nixpkgs.sdk.${system} (sdkPkgs: with sdkPkgs; [
+        cmdline-tools-latest
+        build-tools-35-0-0
+        platform-tools
+        platforms-android-35
+        emulator
+        ndk-26-1-10909125
+        ndk-28-0-13004108
+      ]);
     in
     with pkgs;
     {
@@ -41,21 +36,15 @@
         default =
           mkShell rec {
             buildInputs = [
-              # Android
-              pinnedJDK
               androidSdk
-              pkg-config
+              pinnedJDK
             ];
 
             JAVA_HOME = pinnedJDK;
-            ANDROID_SDK_ROOT = "${androidComposition.androidsdk}/libexec/android-sdk";
-            ANDROID_NDK_ROOT = "${ANDROID_SDK_ROOT}/ndk-bundle";
+            ANDROID_HOME = "${androidSdk}/share/android-sdk";
+            ANDROID_SDK_ROOT = "${androidSdk}/share/android-sdk";
 
-            GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${ANDROID_SDK_ROOT}/build-tools/${androidBuildToolsVersion}/aapt2";
-
-            shellHook = ''
-              export LD_LIBRARY_PATH="${pkgs.libxml2.out}/lib:$LD_LIBRARY_PATH"
-            '';
+            GRADLE_OPTS = "-Dorg.gradle.project.android.aapt2FromMavenOverride=${ANDROID_SDK_ROOT}/build-tools/35.0.0/aapt2";
 
             packages = [
               just
