@@ -121,3 +121,5 @@ bskyogcard/src/assets/fonts/noto-*
 
 # direnv
 .direnv
+# nix build outputs, just in case
+/result
