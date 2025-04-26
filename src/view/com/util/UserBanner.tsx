@@ -1,11 +1,22 @@
 import React from 'react'
-import {Pressable, StyleSheet, View} from 'react-native'
-import {Image as RNImage} from 'react-native-image-crop-picker'
+import {
+  Pressable,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native'
+import {type Image as RNImage} from 'react-native-image-crop-picker'
+import {
+  type MeasuredDimensions,
+  runOnJS,
+  runOnUI,
+} from 'react-native-reanimated'
 import {Image} from 'expo-image'
-import {ModerationUI} from '@atproto/api'
+import {type ModerationUI} from '@atproto/api'
 import {msg, Trans} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
 
+import {measureHandle, useHandleRef} from '#/lib/hooks/useHandleRef'
 import {usePalette} from '#/lib/hooks/usePalette'
 import {
   useCameraPermission,
@@ -15,6 +26,7 @@ import {colors} from '#/lib/styles'
 import {useTheme} from '#/lib/ThemeContext'
 import {logger} from '#/logger'
 import {isAndroid, isNative} from '#/platform/detection'
+import {useLightboxControls} from '#/state/lightbox'
 import {EventStopper} from '#/view/com/util/EventStopper'
 import {tokens, useTheme as useAlfTheme} from '#/alf'
 import {useSheetWrapper} from '#/components/Dialog/sheet-wrapper'
@@ -45,6 +57,9 @@ export function UserBanner({
   const {requestCameraAccessIfNeeded} = useCameraPermission()
   const {requestPhotoAccessIfNeeded} = usePhotoLibraryPermission()
   const sheetWrapper = useSheetWrapper()
+  const {openLightbox} = useLightboxControls()
+
+  const bannerRef = useHandleRef()
 
   const onOpenCamera = React.useCallback(async () => {
     if (!(await requestCameraAccessIfNeeded())) {
@@ -87,6 +102,36 @@ export function UserBanner({
   const onRemoveBanner = React.useCallback(() => {
     onSelectNewBanner?.(null)
   }, [onSelectNewBanner])
+
+  const _openLightbox = React.useCallback(
+    (uri: string, thumbRect: MeasuredDimensions | null) => {
+      openLightbox({
+        images: [
+          {
+            uri,
+            thumbUri: uri,
+            thumbRect,
+            dimensions: null,
+            thumbDimensions: null,
+            type: 'image',
+          },
+        ],
+        index: 0,
+      })
+    },
+    [openLightbox],
+  )
+
+  const onPressBanner = React.useCallback(() => {
+    if (banner && !(moderation?.blur && moderation?.noOverride)) {
+      const bannerHandle = bannerRef.current
+      runOnUI(() => {
+        'worklet'
+        const rect = measureHandle(bannerHandle)
+        runOnJS(_openLightbox)(banner, rect)
+      })()
+    }
+  }, [banner, moderation, _openLightbox, bannerRef])
 
   // setUserBanner is only passed as prop on the EditProfile component
   return onSelectNewBanner ? (
@@ -164,18 +209,25 @@ export function UserBanner({
     </EventStopper>
   ) : banner &&
     !((moderation?.blur && isAndroid) /* android crashes with blur */) ? (
-    <Image
-      testID="userBannerImage"
-      style={[
-        styles.bannerImage,
-        {backgroundColor: theme.palette.default.backgroundLight},
-      ]}
-      contentFit="cover"
-      source={{uri: banner}}
-      blurRadius={moderation?.blur ? 100 : 0}
-      accessible={true}
-      accessibilityIgnoresInvertColors
-    />
+    <TouchableWithoutFeedback
+      testID="profileHeaderAviButton"
+      onPress={onPressBanner}
+      accessibilityRole="image"
+      accessibilityLabel={_(msg`View profile banner`)}
+      accessibilityHint="">
+      <Image
+        testID="userBannerImage"
+        style={[
+          styles.bannerImage,
+          {backgroundColor: theme.palette.default.backgroundLight},
+        ]}
+        contentFit="cover"
+        source={{uri: banner}}
+        blurRadius={moderation?.blur ? 100 : 0}
+        accessible={true}
+        accessibilityIgnoresInvertColors
+      />
+    </TouchableWithoutFeedback>
   ) : (
     <View
       testID="userBannerFallback"
