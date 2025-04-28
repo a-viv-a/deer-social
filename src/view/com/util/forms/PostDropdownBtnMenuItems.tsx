@@ -7,6 +7,7 @@ import {
 } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
 import {
+  type AppBskyEmbedVideo,
   type AppBskyFeedDefs,
   AppBskyFeedPost,
   type AppBskyFeedThreadgate,
@@ -18,6 +19,8 @@ import {useLingui} from '@lingui/react'
 import {useNavigation} from '@react-navigation/native'
 
 import {useOpenLink} from '#/lib/hooks/useOpenLink'
+import {saveVideoToMediaLibrary} from '#/lib/media/manip'
+import {downloadVideoWeb} from '#/lib/media/manip.web'
 import {getCurrentRoute} from '#/lib/routes/helpers'
 import {makeProfileLink} from '#/lib/routes/links'
 import {
@@ -64,6 +67,7 @@ import {ArrowOutOfBox_Stroke2_Corner0_Rounded as Share} from '#/components/icons
 import {BubbleQuestion_Stroke2_Corner0_Rounded as Translate} from '#/components/icons/Bubble'
 import {Clipboard_Stroke2_Corner2_Rounded as ClipboardIcon} from '#/components/icons/Clipboard'
 import {CodeBrackets_Stroke2_Corner0_Rounded as CodeBrackets} from '#/components/icons/CodeBrackets'
+import {Download_Stroke2_Corner0_Rounded as Download} from '#/components/icons/Download'
 import {
   EmojiSad_Stroke2_Corner0_Rounded as EmojiSad,
   EmojiSmile_Stroke2_Corner0_Rounded as EmojiSmile,
@@ -386,6 +390,23 @@ let PostDropdownMenuItems = ({
     })
   }, [isPinned, pinPostMutate, postCid, postUri])
 
+  const onPressDownloadVideo = useCallback(async () => {
+    if (post.embed?.$type !== 'app.bsky.embed.video#view') return
+    const video = post.embed as AppBskyEmbedVideo.View
+    const did = post.author.did
+    const cid = video.cid
+    const uri = `https://bsky.social/xrpc/com.atproto.sync.getBlob?did=${did}&cid=${cid}`
+
+    Toast.show('Downloading video...', 'download')
+
+    let success
+    if (isWeb) success = await downloadVideoWeb({uri: uri})
+    else success = await saveVideoToMediaLibrary({uri: uri})
+
+    if (success) Toast.show('Video downloaded', 'check')
+    else Toast.show('Failed to download video', 'xmark')
+  }, [post])
+
   const onBlockAuthor = useCallback(async () => {
     try {
       await queueBlock()
@@ -454,6 +475,21 @@ let PostDropdownMenuItems = ({
                   icon={isPinPending ? Loader : PinIcon}
                   position="right"
                 />
+              </Menu.Item>
+            </Menu.Group>
+            <Menu.Divider />
+          </>
+        )}
+
+        {post.embed?.$type === 'app.bsky.embed.video#view' && (
+          <>
+            <Menu.Group>
+              <Menu.Item
+                testID="postDropdownDownloadVideoBtn"
+                label={_(msg`Download Video`)}
+                onPress={onPressDownloadVideo}>
+                <Menu.ItemText>{_(msg`Download Video`)}</Menu.ItemText>
+                <Menu.ItemIcon icon={Download} position="right" />
               </Menu.Item>
             </Menu.Group>
             <Menu.Divider />
