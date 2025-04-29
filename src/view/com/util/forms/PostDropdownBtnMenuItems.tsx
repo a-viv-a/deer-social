@@ -7,6 +7,7 @@ import {
 } from 'react-native'
 import * as Clipboard from 'expo-clipboard'
 import {
+  type AppBskyEmbedExternal,
   type AppBskyEmbedVideo,
   type AppBskyFeedDefs,
   AppBskyFeedPost,
@@ -407,6 +408,28 @@ let PostDropdownMenuItems = ({
     else Toast.show('Failed to download video', 'xmark')
   }, [post])
 
+  const onPressDownloadGif = useCallback(async () => {
+    if (post.embed?.$type !== 'app.bsky.embed.external#view') return
+    const media = post.embed as AppBskyEmbedExternal.View
+
+    Toast.show('Downloading GIF...', 'download')
+
+    let success
+    if (isWeb) success = await downloadVideoWeb({uri: media.external.uri})
+    else success = await saveVideoToMediaLibrary({uri: media.external.uri})
+
+    if (success) Toast.show('GIF downloaded', 'check')
+    else Toast.show('Failed to download GIF', 'xmark')
+  }, [post])
+
+  const isEmbedGif = useCallback(() => {
+    if (post.embed?.$type !== 'app.bsky.embed.external#view') return false
+    const embed = post.embed as AppBskyEmbedExternal.View
+    // Janky workaround by checking if the domain is tenor.com
+    const url = new URL(embed.external.uri)
+    return url.host == 'media.tenor.com'
+  }, [post])
+
   const onBlockAuthor = useCallback(async () => {
     try {
       await queueBlock()
@@ -489,6 +512,21 @@ let PostDropdownMenuItems = ({
                 label={_(msg`Download Video`)}
                 onPress={onPressDownloadVideo}>
                 <Menu.ItemText>{_(msg`Download Video`)}</Menu.ItemText>
+                <Menu.ItemIcon icon={Download} position="right" />
+              </Menu.Item>
+            </Menu.Group>
+            <Menu.Divider />
+          </>
+        )}
+
+        {isEmbedGif() && (
+          <>
+            <Menu.Group>
+              <Menu.Item
+                testID="postDropdownDownloadGifBtn"
+                label={_(msg`Download GIF`)}
+                onPress={onPressDownloadGif}>
+                <Menu.ItemText>{_(msg`Download GIF`)}</Menu.ItemText>
                 <Menu.ItemIcon icon={Download} position="right" />
               </Menu.Item>
             </Menu.Group>
