@@ -391,12 +391,36 @@ let PostDropdownMenuItems = ({
     })
   }, [isPinned, pinPostMutate, postCid, postUri])
 
+  // HUGE thanks to juli.ee and mary.my.id for pdsls and atcute/identity-resolver respectively
+  // as a reference for this code
+  const fetchPds = useCallback(async () => {
+    const did = post.author.did
+    let doc
+    if (did.startsWith('did:web:')) {
+      const hostPart = did.slice(8)
+      doc = await fetch(`https://${hostPart}/.well-known/did.json`)
+        .then(r => r.json())
+        .catch(() => null)
+    } else if (did.startsWith('did:plc')) {
+      doc = await fetch(`https://plc.directory/${encodeURIComponent(did)}`)
+        .then(r => r.json())
+        .catch(() => null)
+    }
+    if (!doc) return null
+    const pds = doc.service.find(
+      (service: {type: string}) => service.type === 'AtprotoPersonalDataServer',
+    )
+    if (!pds) return null
+    return pds.serviceEndpoint
+  }, [post])
+
   const onPressDownloadVideo = useCallback(async () => {
     if (post.embed?.$type !== 'app.bsky.embed.video#view') return
     const video = post.embed as AppBskyEmbedVideo.View
     const did = post.author.did
     const cid = video.cid
-    const uri = `https://bsky.social/xrpc/com.atproto.sync.getBlob?did=${did}&cid=${cid}`
+    const pdsUrl = await fetchPds()
+    const uri = `${pdsUrl}/xrpc/com.atproto.sync.getBlob?did=${did}&cid=${cid}`
 
     Toast.show('Downloading video...', 'download')
 
@@ -406,7 +430,7 @@ let PostDropdownMenuItems = ({
 
     if (success) Toast.show('Video downloaded', 'check')
     else Toast.show('Failed to download video', 'xmark')
-  }, [post])
+  }, [post, fetchPds])
 
   const onPressDownloadGif = useCallback(async () => {
     if (post.embed?.$type !== 'app.bsky.embed.external#view') return
@@ -427,7 +451,7 @@ let PostDropdownMenuItems = ({
     const embed = post.embed as AppBskyEmbedExternal.View
     // Janky workaround by checking if the domain is tenor.com
     const url = new URL(embed.external.uri)
-    return url.host == 'media.tenor.com'
+    return url.host === 'media.tenor.com'
   }, [post])
 
   const onBlockAuthor = useCallback(async () => {
