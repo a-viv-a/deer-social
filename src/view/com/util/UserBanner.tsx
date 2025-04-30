@@ -111,7 +111,7 @@ export function UserBanner({
             uri,
             thumbUri: uri,
             thumbRect,
-            dimensions: null,
+            dimensions: thumbRect,
             thumbDimensions: null,
             type: 'image',
           },
