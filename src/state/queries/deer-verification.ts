@@ -23,6 +23,7 @@ import {
   constellationLinks,
 } from './constellation'
 import {LRU} from './direct-fetch-record'
+import {resolvePdsServiceUrl} from './resolve-identity'
 import {useCurrentAccountProfile} from './useCurrentAccountProfile'
 
 const RQKEY_ROOT = 'deer-verification'
@@ -36,9 +37,6 @@ type LinkedRecord = {
   link: ConstellationLink
   record: AppBskyGraphVerification.Record
 }
-
-// TODO: lift this into direct fetch to share cache
-const serviceCache = new LRU<`did:${string}`, string>()
 
 const verificationCache = new LRU<string, any>()
 
@@ -82,26 +80,7 @@ async function getDeerVerificationLinkedRecords(
         async link => {
           const {did, rkey} = link
 
-          let service = await serviceCache.getOrTryInsertWith(did, async () => {
-            const docUrl = did.startsWith('did:plc:')
-              ? `https://plc.directory/${did}`
-              : `https://${did.substring(8)}/.well-known/did.json`
-
-            // TODO: validate!
-            const doc: {
-              service: {
-                serviceEndpoint: string
-                type: string
-              }[]
-            } = await (await fetch(docUrl)).json()
-            const service = doc.service.find(
-              s => s.type === 'AtprotoPersonalDataServer',
-            )?.serviceEndpoint
-
-            if (service === undefined)
-              throw new Error(`could not find a service for ${did}`)
-            return service
-          })
+          let service = await resolvePdsServiceUrl(did)
 
           const request = `${service}/xrpc/com.atproto.repo.getRecord?repo=${did}&collection=app.bsky.graph.verification&rkey=${rkey}`
           const record = await verificationCache.getOrTryInsertWith(
