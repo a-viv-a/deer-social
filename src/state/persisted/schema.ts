@@ -133,6 +133,7 @@ const schema = z.object({
   repostCarouselEnabled: z.boolean().optional(),
   hideFollowNotifications: z.boolean().optional(),
   constellationInstance: z.string().optional(),
+  showLinkInHandle: z.boolean().optional(),
   deerVerification: z
     .object({
       enabled: z.boolean(),
@@ -201,6 +202,7 @@ export const defaults: Schema = {
   repostCarouselEnabled: false,
   hideFollowNotifications: false,
   constellationInstance: 'https://constellation.microcosm.blue/',
+  showLinkInHandle: false,
   deerVerification: {
     enabled: false,
     // https://deer.social/profile/did:plc:p2cp5gopk7mgjegy6wadk3ep/post/3lndyqyyr4k2k

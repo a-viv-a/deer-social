@@ -51,6 +51,10 @@ import {
   useRepostCarouselEnabled,
   useSetRepostCarouselEnabled,
 } from '#/state/preferences/repost-carousel-enabled'
+import {
+  useSetShowLinkInHandle,
+  useShowLinkInHandle,
+} from '#/state/preferences/show-link-in-handle.tsx'
 import {useProfilesQuery} from '#/state/queries/profile'
 import * as SettingsList from '#/screens/Settings/components/SettingsList'
 import {atoms as a, useBreakpoints} from '#/alf'
@@ -270,6 +274,9 @@ export function DeerSettingsScreen({}: Props) {
 
   const repostCarouselEnabled = useRepostCarouselEnabled()
   const setRepostCarouselEnabled = useSetRepostCarouselEnabled()
+
+  const showLinkInHandle = useShowLinkInHandle()
+  const setShowLinkInHandle = useSetShowLinkInHandle()
 
   const [gates, setGatesView] = useState(Object.fromEntries(useGatesCache()))
   const dangerousSetGate = useDangerousSetGate()
@@ -496,6 +503,21 @@ export function DeerSettingsScreen({}: Props) {
               style={[a.w_full]}>
               <Toggle.LabelText style={[a.flex_1]}>
                 <Trans>Do not fall back to discover feed</Trans>
+              </Toggle.LabelText>
+              <Toggle.Platform />
+            </Toggle.Item>
+            <Toggle.Item
+              name="show_link_in_handle"
+              label={_(
+                msg`On non-bsky.social handles, show a link to that URL`,
+              )}
+              value={showLinkInHandle}
+              onChange={value => setShowLinkInHandle(value)}
+              style={[a.w_full]}>
+              <Toggle.LabelText style={[a.flex_1]}>
+                <Trans>
+                  On non-bsky.social handles, show a link to that URL
+                </Trans>
               </Toggle.LabelText>
               <Toggle.Platform />
             </Toggle.Item>

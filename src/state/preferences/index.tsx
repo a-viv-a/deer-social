@@ -18,6 +18,7 @@ import {Provider as LargeAltBadgeProvider} from './large-alt-badge'
 import {Provider as NoAppLabelersProvider} from './no-app-labelers'
 import {Provider as NoDiscoverProvider} from './no-discover-fallback'
 import {Provider as RepostCarouselProvider} from './repost-carousel-enabled'
+import {Provider as ShowLinkInHandleProvider} from './show-link-in-handle'
 import {Provider as SubtitlesProvider} from './subtitles'
 import {Provider as TrendingSettingsProvider} from './trending'
 import {Provider as UsedStarterPacksProvider} from './used-starter-packs'
@@ -50,29 +51,31 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
                   <ConstellationInstanceProvider>
                     <DeerVerificationProvider>
                       <NoDiscoverProvider>
-                        <LargeAltBadgeProvider>
-                          <ExternalEmbedsProvider>
-                            <HiddenPostsProvider>
-                              <InAppBrowserProvider>
-                                <DisableHapticsProvider>
-                                  <AutoplayProvider>
-                                    <UsedStarterPacksProvider>
-                                      <SubtitlesProvider>
-                                        <TrendingSettingsProvider>
-                                          <RepostCarouselProvider>
-                                            <KawaiiProvider>
-                                              {children}
-                                            </KawaiiProvider>
-                                          </RepostCarouselProvider>
-                                        </TrendingSettingsProvider>
-                                      </SubtitlesProvider>
-                                    </UsedStarterPacksProvider>
-                                  </AutoplayProvider>
-                                </DisableHapticsProvider>
-                              </InAppBrowserProvider>
-                            </HiddenPostsProvider>
-                          </ExternalEmbedsProvider>
-                        </LargeAltBadgeProvider>
+                        <ShowLinkInHandleProvider>
+                          <LargeAltBadgeProvider>
+                            <ExternalEmbedsProvider>
+                              <HiddenPostsProvider>
+                                <InAppBrowserProvider>
+                                  <DisableHapticsProvider>
+                                    <AutoplayProvider>
+                                      <UsedStarterPacksProvider>
+                                        <SubtitlesProvider>
+                                          <TrendingSettingsProvider>
+                                            <RepostCarouselProvider>
+                                              <KawaiiProvider>
+                                                {children}
+                                              </KawaiiProvider>
+                                            </RepostCarouselProvider>
+                                          </TrendingSettingsProvider>
+                                        </SubtitlesProvider>
+                                      </UsedStarterPacksProvider>
+                                    </AutoplayProvider>
+                                  </DisableHapticsProvider>
+                                </InAppBrowserProvider>
+                              </HiddenPostsProvider>
+                            </ExternalEmbedsProvider>
+                          </LargeAltBadgeProvider>
+                        </ShowLinkInHandleProvider>
                       </NoDiscoverProvider>
                     </DeerVerificationProvider>
                   </ConstellationInstanceProvider>
