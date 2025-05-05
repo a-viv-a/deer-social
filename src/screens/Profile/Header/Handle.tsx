@@ -23,7 +23,7 @@ export function ProfileHeaderHandle({
   const {_} = useLingui()
   const invalidHandle = isInvalidHandle(profile.handle)
   const blockHide = profile.viewer?.blocking || profile.viewer?.blockedBy
-  const isBskySocialHandle = profile.handle.endsWith('bsky.social')
+  const isBskySocialHandle = profile.handle.endsWith('.bsky.social')
   const showProfileInHandle = useShowLinkInHandle()
   return (
     <View
