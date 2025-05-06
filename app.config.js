@@ -164,6 +164,10 @@ module.exports = function (_config) {
                 scheme: 'https',
                 host: 'deer.social',
               },
+              {
+                scheme: 'https',
+                host: 'bsky.app',
+              },
               IS_DEV && {
                 scheme: 'http',
                 host: 'localhost:19006',
