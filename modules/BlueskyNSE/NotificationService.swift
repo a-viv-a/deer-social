@@ -1,7 +1,7 @@
 import UserNotifications
 import UIKit
 
-let APP_GROUP = "group.app.bsky"
+let APP_GROUP = "group.app.deersocial"
 typealias ContentHandler = (UNNotificationContent) -> Void
 
 // This extension allows us to do some processing of the received notification

@@ -50,7 +50,7 @@ module.exports = function (_config) {
       primaryColor: '#4b9b6c',
       ios: {
         supportsTablet: false,
-        bundleIdentifier: 'social.deer',
+        bundleIdentifier: 'social.deer.app',
         config: {
           usesNonExemptEncryption: false,
         },
@@ -237,7 +237,7 @@ module.exports = function (_config) {
             networkInstrumentation: true,
           },
         ],
-        './plugins/starterPackAppClipExtension/withStarterPackAppClip.js',
+        // './plugins/starterPackAppClipExtension/withStarterPackAppClip.js',
         './plugins/withGradleJVMHeapSizeIncrease.js',
         './plugins/withAndroidManifestPlugin.js',
         './plugins/withAndroidManifestFCMIconPlugin.js',
@@ -381,7 +381,7 @@ module.exports = function (_config) {
                 //     bundleIdentifier: 'xyz.blueskyweb.app.Share-with-Bluesky',
                 //     entitlements: {
                 //       'com.apple.security.application-groups': [
-                //         'group.app.bsky',
+                //         'group.app.deersocial',
                 //       ],
                 //     },
                 //   },
@@ -390,7 +390,7 @@ module.exports = function (_config) {
                 //     bundleIdentifier: 'xyz.blueskyweb.app.BlueskyNSE',
                 //     entitlements: {
                 //       'com.apple.security.application-groups': [
-                //         'group.app.bsky',
+                //         'group.app.deersocial',
                 //       ],
                 //     },
                 //   },
