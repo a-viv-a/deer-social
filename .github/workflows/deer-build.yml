@@ -1,0 +1,43 @@
+name: Build deer.social
+on: workflow_dispatch
+
+jobs:
+  deer-build-android:
+    name: Build deer.social for Android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+          cache: gradle
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Setup just
+        uses: extractions/setup-just@v2
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Copy example build settings
+        run: |
+          cp .env.example .env
+          cp google-services.json.example google-services.json
+
+      - name: Build
+        run: just dist-build-android-gradle
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: android/app/build/outputs/apk/release/app-release.apk

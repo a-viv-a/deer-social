@@ -8,6 +8,9 @@ dist-build-web: intl build-web
 [group('dist')]
 dist-build-android-sideload: intl build-android-sideload
 
+[group('dist')]
+dist-build-android-gradle: intl build-android-gradle
+
 [group('build')]
 intl:
     yarn intl:build
@@ -23,6 +26,11 @@ build-web: && postbuild-web
 [group('build')]
 build-android-sideload: prebuild-android
     eas build --local --platform android --profile sideload-android
+
+[group('build')]
+[working-directory: 'android']
+build-android-gradle: prebuild-android
+    ./gradlew app:assembleRelease
 
 [group('build')]
 postbuild-web:
