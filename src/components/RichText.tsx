@@ -1,14 +1,15 @@
 import React from 'react'
-import {TextStyle} from 'react-native'
+import {type TextStyle} from 'react-native'
 import {AppBskyRichtextFacet, RichText as RichTextAPI} from '@atproto/api'
 
 import {toShortUrl} from '#/lib/strings/url-helpers'
-import {atoms as a, flatten, TextStyleProp} from '#/alf'
+import {atoms as a, flatten, type TextStyleProp} from '#/alf'
 import {isOnlyEmoji} from '#/alf/typography'
-import {InlineLinkText, LinkProps} from '#/components/Link'
+import {InlineLinkText, type LinkProps} from '#/components/Link'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
 import {RichTextTag} from '#/components/RichTextTag'
-import {Text, TextProps} from '#/components/Typography'
+import {Text, type TextProps} from '#/components/Typography'
+import {BluemojiEmoji, containsBluemoji, type ExtendedFacet} from './BluemojiEmoji'
 
 const WORD_WRAP = {wordWrap: 1}
 
@@ -151,6 +152,14 @@ export function RichText({
           tag={tag.tag}
           textStyle={interactiveStyles}
           authorHandle={authorHandle}
+        />,
+      )
+    } else if (containsBluemoji(segment.facet as ExtendedFacet)) {
+      els.push(
+        <BluemojiEmoji
+          key={key}
+          style={flattenedStyle}
+          facet={segment.facet as ExtendedFacet}
         />,
       )
     } else {

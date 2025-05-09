@@ -5204,6 +5204,18 @@
     "@babel/runtime" "^7.20.13"
     "@lingui/core" "4.14.1"
 
+"@lottiefiles/dotlottie-react@^0.13.5":
+  version "0.13.5"
+  resolved "https://registry.yarnpkg.com/@lottiefiles/dotlottie-react/-/dotlottie-react-0.13.5.tgz#19344572316f6e8a5677ad7b777c4b9057c8d302"
+  integrity sha512-4U5okwjRqDPkjB572hfZtLXJ/LGfCo6vDwUB2KIPEUoSgqbIlw+UrbnaqVp3GS+dRvhMD27F2JObpHpYRlpF0Q==
+  dependencies:
+    "@lottiefiles/dotlottie-web" "0.44.0"
+
+"@lottiefiles/dotlottie-web@0.44.0":
+  version "0.44.0"
+  resolved "https://registry.yarnpkg.com/@lottiefiles/dotlottie-web/-/dotlottie-web-0.44.0.tgz#3c139677f3e1e1f9fbcee10b55fd9129fb046aa7"
+  integrity sha512-IUWKVciDJI/BMWDWnh7j0Ngd0N8q9ySRAwm84aDqIE07qpmdZ7x1rkIpBaU1yHSNqNYHeh1Rxsl+LC3CY4f0KA==
+
 "@mattermost/react-native-paste-input@^0.7.1":
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/@mattermost/react-native-paste-input/-/react-native-paste-input-0.7.1.tgz#f14585030b992cf7c9bbd0921225eefa501756ba"
@@ -14309,6 +14321,16 @@ loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.4.0:
   integrity sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
+
+lottie-ios@3.2.3:
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/lottie-ios/-/lottie-ios-3.2.3.tgz#d5a029ccce611603d178ea7ba725c1446f2310b4"
+  integrity sha512-mubYMN6+1HXa8z3EJKBvNBkl4UoVM4McjESeB2PgvRMSngmJtC5yUMRdhbbrIAn5Liu3hFGao/14s5hQIgtkRQ==
+
+lottie-react-native@^7.2.2:
+  version "7.2.2"
+  resolved "https://registry.yarnpkg.com/lottie-react-native/-/lottie-react-native-7.2.2.tgz#f328526dba9a36ba8c908aed9d3f68a8d3e0ec41"
+  integrity sha512-pp3dnFVFZlfZzIL5qKGXju2d6RfnYhPbb8xQL9dYqvPbPy2EbnK2aFlv6jAZLYh0QjUGPEmRAgAAnsOOtT+H9Q==
 
 lower-case@^2.0.2:
   version "2.0.2"
