@@ -38,6 +38,10 @@ import {
   useHideFollowNotifications,
   useSetHideFollowNotifications,
 } from '#/state/preferences/hide-follow-notifications'
+import {
+  useHighQualityImages,
+  useSetHighQualityImages,
+} from '#/state/preferences/high-quality-images'
 import {useModerationOpts} from '#/state/preferences/moderation-opts'
 import {
   useNoAppLabelers,
@@ -259,6 +263,9 @@ export function DeerSettingsScreen({}: Props) {
 
   const noDiscoverFallback = useNoDiscoverFallback()
   const setNoDiscoverFallback = useSetNoDiscoverFallback()
+
+  const highQualityImages = useHighQualityImages()
+  const setHighQualityImages = useSetHighQualityImages()
 
   const hideFollowNotifications = useHideFollowNotifications()
   const setHideFollowNotifications = useSetHideFollowNotifications()
@@ -521,6 +528,24 @@ export function DeerSettingsScreen({}: Props) {
               </Toggle.LabelText>
               <Toggle.Platform />
             </Toggle.Item>
+
+            <Toggle.Item
+              name="high_quality_images"
+              label={_(msg`Display images in higher quality`)}
+              value={highQualityImages}
+              onChange={value => setHighQualityImages(value)}
+              style={[a.w_full]}>
+              <Toggle.LabelText style={[a.flex_1]}>
+                <Trans>Display images in higher quality</Trans>
+              </Toggle.LabelText>
+              <Toggle.Platform />
+            </Toggle.Item>
+            <Admonition type="info" style={[a.flex_1]}>
+              <Trans>
+                Images will be served as PNG instead of JPEG. Images will take
+                longer to load and use more bandwidth.
+              </Trans>
+            </Admonition>
           </SettingsList.Group>
 
           <SettingsList.Group contentContainerStyle={[a.gap_sm]}>

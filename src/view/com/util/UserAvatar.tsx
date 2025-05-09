@@ -2,14 +2,14 @@ import React, {memo, useMemo} from 'react'
 import {
   Image,
   Pressable,
-  StyleProp,
+  type StyleProp,
   StyleSheet,
   View,
-  ViewStyle,
+  type ViewStyle,
 } from 'react-native'
-import {Image as RNImage} from 'react-native-image-crop-picker'
+import {type Image as RNImage} from 'react-native-image-crop-picker'
 import Svg, {Circle, Path, Rect} from 'react-native-svg'
-import {ModerationUI} from '@atproto/api'
+import {type ModerationUI} from '@atproto/api'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {msg, Trans} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
@@ -24,6 +24,10 @@ import {makeProfileLink} from '#/lib/routes/links'
 import {colors} from '#/lib/styles'
 import {logger} from '#/logger'
 import {isAndroid, isNative, isWeb} from '#/platform/detection'
+import {
+  maybeModifyHighQualityImage,
+  useHighQualityImages,
+} from '#/state/preferences/high-quality-images'
 import {precacheProfile} from '#/state/queries/profile'
 import {HighPriorityImage} from '#/view/com/util/images/Image'
 import {tokens, useTheme} from '#/alf'
@@ -38,7 +42,7 @@ import {Link} from '#/components/Link'
 import {MediaInsetBorder} from '#/components/MediaInsetBorder'
 import * as Menu from '#/components/Menu'
 import {ProfileHoverCard} from '#/components/ProfileHoverCard'
-import * as bsky from '#/types/bsky'
+import type * as bsky from '#/types/bsky'
 import {openCamera, openCropper, openPicker} from '../../../lib/media/picker'
 
 export type UserAvatarType = 'user' | 'algo' | 'list' | 'labeler'
@@ -194,6 +198,7 @@ let UserAvatar = ({
   const pal = usePalette('default')
   const backgroundColor = pal.colors.backgroundLight
   const finalShape = overrideShape ?? (type === 'user' ? 'circle' : 'square')
+  const highQualityImages = useHighQualityImages()
 
   const aviStyle = useMemo(() => {
     if (finalShape === 'square') {
@@ -247,7 +252,10 @@ let UserAvatar = ({
           style={aviStyle}
           resizeMode="cover"
           source={{
-            uri: hackModifyThumbnailPath(avatar, size < 90),
+            uri: maybeModifyHighQualityImage(
+              hackModifyThumbnailPath(avatar, size < 90),
+              highQualityImages,
+            ),
           }}
           blurRadius={moderation?.blur ? BLUR_AMOUNT : 0}
           onLoad={onLoad}
@@ -258,7 +266,10 @@ let UserAvatar = ({
           style={aviStyle}
           contentFit="cover"
           source={{
-            uri: hackModifyThumbnailPath(avatar, size < 90),
+            uri: maybeModifyHighQualityImage(
+              hackModifyThumbnailPath(avatar, size < 90),
+              highQualityImages,
+            ),
           }}
           blurRadius={moderation?.blur ? BLUR_AMOUNT : 0}
           onLoad={onLoad}
@@ -289,6 +300,7 @@ let EditableUserAvatar = ({
   const {requestCameraAccessIfNeeded} = useCameraPermission()
   const {requestPhotoAccessIfNeeded} = usePhotoLibraryPermission()
   const sheetWrapper = useSheetWrapper()
+  const highQualityImages = useHighQualityImages()
 
   const aviStyle = useMemo(() => {
     if (type === 'algo' || type === 'list') {
@@ -367,7 +379,9 @@ let EditableUserAvatar = ({
               <HighPriorityImage
                 testID="userAvatarImage"
                 style={aviStyle}
-                source={{uri: avatar}}
+                source={{
+                  uri: maybeModifyHighQualityImage(avatar, highQualityImages),
+                }}
                 accessibilityRole="image"
               />
             ) : (

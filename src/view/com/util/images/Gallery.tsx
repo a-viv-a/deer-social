@@ -1,12 +1,16 @@
-import React from 'react'
-import {Pressable, StyleProp, View, ViewStyle} from 'react-native'
-import {Image, ImageStyle} from 'expo-image'
-import {AppBskyEmbedImages} from '@atproto/api'
+import {Pressable, type StyleProp, View, type ViewStyle} from 'react-native'
+import {Image, type ImageStyle} from 'expo-image'
+import {type AppBskyEmbedImages} from '@atproto/api'
 import {msg} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
+import type React from 'react'
 
-import {HandleRef} from '#/lib/hooks/useHandleRef'
-import {Dimensions} from '#/lib/media/types'
+import {type HandleRef} from '#/lib/hooks/useHandleRef'
+import {type Dimensions} from '#/lib/media/types'
+import {
+  maybeModifyHighQualityImage,
+  useHighQualityImages,
+} from '#/state/preferences/high-quality-images'
 import {useLargeAltBadgeEnabled} from '#/state/preferences/large-alt-badge'
 import {PostEmbedViewContext} from '#/view/com/util/post-embeds/types'
 import {atoms as a, useTheme} from '#/alf'
@@ -47,6 +51,7 @@ export function GalleryItem({
   const t = useTheme()
   const {_} = useLingui()
   const largeAltBadge = useLargeAltBadgeEnabled()
+  const highQualityImages = useHighQualityImages()
   const image = images[index]
   const hasAlt = !!image.alt
   const hideBadges =
@@ -71,7 +76,9 @@ export function GalleryItem({
         accessibilityLabel={image.alt || _(msg`Image`)}
         accessibilityHint="">
         <Image
-          source={{uri: image.thumb}}
+          source={{
+            uri: maybeModifyHighQualityImage(image.thumb, highQualityImages),
+          }}
           style={[a.flex_1]}
           accessible={true}
           accessibilityLabel={image.alt}

@@ -1,10 +1,14 @@
-import React from 'react'
-import {StyleProp, StyleSheet, View, ViewStyle} from 'react-native'
+import {type StyleProp, StyleSheet, View, type ViewStyle} from 'react-native'
 import {Image} from 'expo-image'
-import {AppBskyFeedDefs} from '@atproto/api'
+import {type AppBskyFeedDefs} from '@atproto/api'
 import {Trans} from '@lingui/macro'
+import type React from 'react'
 
 import {isTenorGifUri} from '#/lib/strings/embed-player'
+import {
+  maybeModifyHighQualityImage,
+  useHighQualityImages,
+} from '#/state/preferences/high-quality-images'
 import {atoms as a, useTheme} from '#/alf'
 import {MediaInsetBorder} from '#/components/MediaInsetBorder'
 import {Text} from '#/components/Typography'
@@ -21,6 +25,7 @@ export function Embed({
   embed: AppBskyFeedDefs.PostView['embed']
   style?: StyleProp<ViewStyle>
 }) {
+  const highQualityImages = useHighQualityImages()
   const e = bsky.post.parseEmbed(embed)
 
   if (!e) return null
@@ -31,7 +36,10 @@ export function Embed({
         {e.view.images.map(image => (
           <ImageItem
             key={image.thumb}
-            thumbnail={image.thumb}
+            thumbnail={maybeModifyHighQualityImage(
+              image.thumb,
+              highQualityImages,
+            )}
             alt={image.alt}
           />
         ))}

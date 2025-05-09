@@ -1,13 +1,17 @@
 import React, {useRef} from 'react'
-import {DimensionValue, Pressable, View} from 'react-native'
+import {type DimensionValue, Pressable, View} from 'react-native'
 import {Image} from 'expo-image'
-import {AppBskyEmbedImages} from '@atproto/api'
+import {type AppBskyEmbedImages} from '@atproto/api'
 import {msg} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
 
-import {HandleRef, useHandleRef} from '#/lib/hooks/useHandleRef'
-import type {Dimensions} from '#/lib/media/types'
+import {type HandleRef, useHandleRef} from '#/lib/hooks/useHandleRef'
+import  {type Dimensions} from '#/lib/media/types'
 import {isNative} from '#/platform/detection'
+import {
+  maybeModifyHighQualityImage,
+  useHighQualityImages,
+} from '#/state/preferences/high-quality-images'
 import {useLargeAltBadgeEnabled} from '#/state/preferences/large-alt-badge'
 import {atoms as a, useBreakpoints, useTheme} from '#/alf'
 import {ArrowsDiagonalOut_Stroke2_Corner0_Rounded as Fullscreen} from '#/components/icons/ArrowsDiagonal'
@@ -77,6 +81,7 @@ export function AutoSizedImage({
   const largeAlt = useLargeAltBadgeEnabled()
   const containerRef = useHandleRef()
   const fetchedDimsRef = useRef<{width: number; height: number} | null>(null)
+  const highQualityImages = useHighQualityImages()
 
   let aspectRatio: number | undefined
   const dims = image.aspectRatio
@@ -107,7 +112,7 @@ export function AutoSizedImage({
       <Image
         contentFit={isContain ? 'contain' : 'cover'}
         style={[a.w_full, a.h_full]}
-        source={image.thumb}
+        source={maybeModifyHighQualityImage(image.thumb, highQualityImages)}
         accessible={true} // Must set for `accessibilityLabel` to work
         accessibilityIgnoresInvertColors
         accessibilityLabel={image.alt}

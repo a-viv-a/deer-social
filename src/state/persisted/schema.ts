@@ -140,6 +140,7 @@ const schema = z.object({
       trusted: z.array(z.string()),
     })
     .optional(),
+  highQualityImages: z.boolean().optional(),
 
   /** @deprecated */
   mutedThreads: z.array(z.string()),
@@ -213,6 +214,7 @@ export const defaults: Schema = {
       'did:plc:b2kutgxqlltwc6lhs724cfwr',
     ],
   },
+  highQualityImages: false,
 }
 
 export function tryParse(rawData: string): Schema | undefined {

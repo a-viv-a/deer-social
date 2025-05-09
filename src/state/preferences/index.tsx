@@ -11,6 +11,7 @@ import {Provider as ExternalEmbedsProvider} from './external-embeds-prefs'
 import {Provider as GoLinksProvider} from './go-links-enabled'
 import {Provider as HiddenPostsProvider} from './hidden-posts'
 import {Provider as FollowNotificationsProvider} from './hide-follow-notifications'
+import {Provider as HighQualityImagesProvider} from './high-quality-images'
 import {Provider as InAppBrowserProvider} from './in-app-browser'
 import {Provider as KawaiiProvider} from './kawaii'
 import {Provider as LanguagesProvider} from './languages'
@@ -55,23 +56,25 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
                           <LargeAltBadgeProvider>
                             <ExternalEmbedsProvider>
                               <HiddenPostsProvider>
-                                <InAppBrowserProvider>
-                                  <DisableHapticsProvider>
-                                    <AutoplayProvider>
-                                      <UsedStarterPacksProvider>
-                                        <SubtitlesProvider>
-                                          <TrendingSettingsProvider>
-                                            <RepostCarouselProvider>
-                                              <KawaiiProvider>
-                                                {children}
-                                              </KawaiiProvider>
-                                            </RepostCarouselProvider>
-                                          </TrendingSettingsProvider>
-                                        </SubtitlesProvider>
-                                      </UsedStarterPacksProvider>
-                                    </AutoplayProvider>
-                                  </DisableHapticsProvider>
-                                </InAppBrowserProvider>
+                                <HighQualityImagesProvider>
+                                  <InAppBrowserProvider>
+                                    <DisableHapticsProvider>
+                                      <AutoplayProvider>
+                                        <UsedStarterPacksProvider>
+                                          <SubtitlesProvider>
+                                            <TrendingSettingsProvider>
+                                              <RepostCarouselProvider>
+                                                <KawaiiProvider>
+                                                  {children}
+                                                </KawaiiProvider>
+                                              </RepostCarouselProvider>
+                                            </TrendingSettingsProvider>
+                                          </SubtitlesProvider>
+                                        </UsedStarterPacksProvider>
+                                      </AutoplayProvider>
+                                    </DisableHapticsProvider>
+                                  </InAppBrowserProvider>
+                                </HighQualityImagesProvider>
                               </HiddenPostsProvider>
                             </ExternalEmbedsProvider>
                           </LargeAltBadgeProvider>

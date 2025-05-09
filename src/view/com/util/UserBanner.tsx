@@ -27,6 +27,10 @@ import {useTheme} from '#/lib/ThemeContext'
 import {logger} from '#/logger'
 import {isAndroid, isNative} from '#/platform/detection'
 import {useLightboxControls} from '#/state/lightbox'
+import {
+  maybeModifyHighQualityImage,
+  useHighQualityImages,
+} from '#/state/preferences/high-quality-images'
 import {EventStopper} from '#/view/com/util/EventStopper'
 import {tokens, useTheme as useAlfTheme} from '#/alf'
 import {useSheetWrapper} from '#/components/Dialog/sheet-wrapper'
@@ -58,6 +62,7 @@ export function UserBanner({
   const {requestPhotoAccessIfNeeded} = usePhotoLibraryPermission()
   const sheetWrapper = useSheetWrapper()
   const {openLightbox} = useLightboxControls()
+  const highQualityImages = useHighQualityImages()
 
   const bannerRef = useHandleRef()
 
@@ -108,8 +113,8 @@ export function UserBanner({
       openLightbox({
         images: [
           {
-            uri,
-            thumbUri: uri,
+            uri: maybeModifyHighQualityImage(uri, highQualityImages),
+            thumbUri: maybeModifyHighQualityImage(uri, highQualityImages),
             thumbRect,
             dimensions: thumbRect,
             thumbDimensions: null,
@@ -119,7 +124,7 @@ export function UserBanner({
         index: 0,
       })
     },
-    [openLightbox],
+    [openLightbox, highQualityImages],
   )
 
   const onPressBanner = React.useCallback(() => {
@@ -144,7 +149,9 @@ export function UserBanner({
                 <Image
                   testID="userBannerImage"
                   style={styles.bannerImage}
-                  source={{uri: banner}}
+                  source={{
+                    uri: maybeModifyHighQualityImage(banner, highQualityImages),
+                  }}
                   accessible={true}
                   accessibilityIgnoresInvertColors
                 />
@@ -222,7 +229,7 @@ export function UserBanner({
           {backgroundColor: theme.palette.default.backgroundLight},
         ]}
         contentFit="cover"
-        source={{uri: banner}}
+        source={{uri: maybeModifyHighQualityImage(banner, highQualityImages)}}
         blurRadius={moderation?.blur ? 100 : 0}
         accessible={true}
         accessibilityIgnoresInvertColors
